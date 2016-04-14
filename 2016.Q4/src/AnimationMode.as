@@ -13,6 +13,9 @@ package
 		private var _pauseButton:Image;
 		private var _deleteButton:Image;	
 		
+		
+		private var _content:Image;
+		
 		public function AnimationMode()
 		{
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
@@ -25,37 +28,45 @@ package
 			{
 				switch(guiArray[i].name)
 				{
-										case "playButton":
-											_playButton = new Image(guiArray[i].texture);
-											_playButton.pivotX = _playButton.width / 2;
-											_playButton.pivotY = _playButton.height / 2;
-											_playButton.x = 632;
-											_playButton.y = 532;						
-											addChild(_playButton);						
-											break;
-										case "pauseButton":
-											_pauseButton = new Image(guiArray[i].texture);
-											_pauseButton.pivotX = _pauseButton.width / 2;
-											_pauseButton.pivotY = _pauseButton.height / 2;
-											_pauseButton.x = 732;
-											_pauseButton.y = 532;
-											addChild(_pauseButton);
-											break;
-										case "deleteButton":
-											_deleteButton = new Image(guiArray[i].texture);
-											_deleteButton.pivotX = _deleteButton.width / 2;
-											_deleteButton.pivotY = _deleteButton.height / 2;
-											_deleteButton.x = 832;
-											_deleteButton.y = 532;
-											addChild(_deleteButton);
-											break;
+					case "playButton":
+						_playButton = new Image(guiArray[i].texture);
+						_playButton.pivotX = _playButton.width / 2;
+						_playButton.pivotY = _playButton.height / 2;
+						_playButton.x = 632;
+						_playButton.y = 532;						
+						addChild(_playButton);						
+						break;
+					case "pauseButton":
+						_pauseButton = new Image(guiArray[i].texture);
+						_pauseButton.pivotX = _pauseButton.width / 2;
+						_pauseButton.pivotY = _pauseButton.height / 2;
+						_pauseButton.x = 732;
+						_pauseButton.y = 532;
+						addChild(_pauseButton);
+						break;
+					case "deleteButton":
+						_deleteButton = new Image(guiArray[i].texture);
+						_deleteButton.pivotX = _deleteButton.width / 2;
+						_deleteButton.pivotY = _deleteButton.height / 2;
+						_deleteButton.x = 832;
+						_deleteButton.y = 532;
+						addChild(_deleteButton);
+						break;
+					case "content":
+						_content = new Image(guiArray[i].texture);
+						_content.pivotX = _content.width / 2;
+						_content.pivotY = _content.height / 2;
+						_content.x = 450;
+						_content.y = 250;
+						addChild(_content);
+						break;
 				}
 			}
 		}
 		
 		private function onAddedEvents(event:starling.events.Event):void
 		{
-			trace(event.target);		
+			//trace(event.target);		
 			
 			_playButton.addEventListener(TouchEvent.TOUCH, onPlayButton);
 			_pauseButton.addEventListener(TouchEvent.TOUCH, onPauseButton);
