@@ -33,23 +33,17 @@ package
 		private var _animationModeText:TextField;
 		private var _imageModeText:TextField;
 		
-		
-	
-		
 		public function MainStage()
 		{
 			_loadResource = new GUILoader(onLoadingComplete);
-			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
-			
-			
-			//addEventListener(Event.ADDED_TO_STAGE, onInit);
+			addEventListener(TouchEvent.TOUCH, onAddedEvents);				
 		}
 		
-		private function onInit():void
-		{
-			//stage.addEventListener(TouchEvent.TOUCH, onLoadSpriteSheets);			
-		}
-		
+		/**
+		 * 모든 터치 이벤트를 관장하는 이벤트 리스너 
+		 * @param event
+		 * 
+		 */
 		private function onAddedEvents(event:starling.events.Event):void
 		{
 			//trace(event.target);
@@ -83,8 +77,7 @@ package
 				init();
 				
 				_animationMode.init(_guiArray);
-				var animationModeSprite:Sprite = _animationMode;
-				trace(animationModeSprite.bounds);
+				var animationModeSprite:Sprite = _animationMode;				
 				addChild(animationModeSprite);
 				
 				_spriteSheet.init(_guiArray);
