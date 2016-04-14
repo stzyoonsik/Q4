@@ -10,12 +10,8 @@ package
 	
 	//import starling.events.Event;
 
-	public class ResourceLoader
+	public class GUILoader
 	{
-
-	
-
-
 		private var _completeFunc:Function;	
 		private var _urlArray:Array = new Array();					//파일명이 담긴 배열
 		private var _imageDataArray:Array = new Array();			//ImageData가 담긴 배열 
@@ -44,7 +40,7 @@ package
 		}
 		
 		
-		public function ResourceLoader(cFunc:Function)
+		public function GUILoader(cFunc:Function)
 		{
 			_completeFunc = cFunc;
 			
@@ -96,7 +92,7 @@ package
 		 * 각각의 리소스를 로드하고 이벤트를 붙여주는 메소드 
 		 * 
 		 */
-		private function buildLoader():void
+		public function buildLoader():void
 		{
 			for(var i:int = 0; i<_urlArray.length; ++i)
 			{
@@ -116,7 +112,7 @@ package
 		 * @return 폴더 안의 각각의 파일들
 		 * 
 		 */
-		private function getResource():Array
+		public function getResource():Array
 		{
 			var directory:File = File.applicationDirectory.resolvePath("resources");
 			
@@ -131,7 +127,7 @@ package
 		 * @param resourceArray 폴더 안에 들어있던 모든 파일들
 		 * 파일 이름을 push하는 메소드
 		 */
-		private function countImageFile(resourceArray:Array):void
+		public function countImageFile(resourceArray:Array):void
 		{			
 			for(var i:int = 0; i<resourceArray.length; ++i)
 			{				
