@@ -7,6 +7,7 @@ package
 	import flash.events.FileListEvent;
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
+	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	
 	import starling.display.Image;
@@ -27,14 +28,18 @@ package
 		private var _spriteSheetList:Array = new Array();							//스프라이트시트 텍스트필드를 담는 배열
 		private var _selectSpriteSheetButton:Image;									//화살표버튼
 		
-		private var _spriteSheetArray:Array = new Array();							//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 배열에 푸쉬됨
+		public static var _spriteSheetArray:Array = new Array();						//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 배열에 푸쉬됨
 		private var _scaledSpriteSheetArray:Array = new Array();					//위 배열과 같지만 이미지 크기를 1/4로 줄인 배열
-		private var _xmlArray:Array = new Array();	
 		
-		private var _numberOfSpriteSheet:int;
+		public static var _xmlArray:Array = new Array();							
+		private var _xmlURL:String;
 		
+		private var _numberOfPNG:int;
+		private var _numberOfXML:int;
 	
 		private var _currentSpriteSheet:TextField = new TextField(240, 24, "");		//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
+		
+		public static var _imageArray:Array;							//조각난 각각의 이미지를 담는 배열
 		
 		
 		
@@ -140,16 +145,53 @@ package
 		 */
 		private function onFilesSelected(event:FileListEvent):void
 		{
+			_numberOfXML += event.files.length;
+			_numberOfPNG += event.files.length;
+			
 			for (var i:int = 0; i < event.files.length; ++i) 
 			{
 				//trace(event.files[i].nativePath);
 				var loader:Loader = new Loader();				
-				loader.load(new URLRequest(event.files[i].url));
+				loader.load(new URLRequest(event.files[i].url));				
 				loader.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE, onLoaderComplete);				
 				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderFailed);
+				
+				_xmlURL = event.files[i].url;
+				var xmlURL:String = event.files[i].url;
+				var dot:int = xmlURL.lastIndexOf(".");
+				xmlURL = xmlURL.substring(0, dot);		
+				xmlURL += ".xml";
+				
+				trace(xmlURL);
+				
+				
+				var urlLoader:URLLoader = new URLLoader();				
+				urlLoader.addEventListener(flash.events.Event.COMPLETE, onXMLLoaderComplete);
+				var urlRequest:URLRequest = new URLRequest(xmlURL);
+				urlLoader.load(urlRequest);
+			}
+		}		
+
+		private function onXMLLoaderComplete(event:flash.events.Event):void
+		{
+			
+			var xml:XML = new XML(event.currentTarget.data);
+			_xmlArray.push(xml);
+			
+			//xml이 다 로드되면
+			//trace(_xmlArray.length);
+			//trace(_numberOfSpriteSheet);
+			if(_xmlArray.length == _numberOfXML)
+			{
+				trace("xml 로드 완료");
+				for(var i:int=0; i<_xmlArray.length; ++i)
+				{
+					trace(_xmlArray[i].child("SubTexture")[0].attribute("name"));
+					//trace(_xmlArray[i]);
+				}
+				//_imageArray.push();
 			}
 		}
-		
 		/**
 		 * 
 		 * @param event 완료
@@ -157,7 +199,7 @@ package
 		 */
 		private function onLoaderComplete(event:flash.events.Event):void
 		{
-			_numberOfSpriteSheet++;
+			
 			_selectSpriteSheetButton.visible = true;
 			
 			var loaderInfo:LoaderInfo = LoaderInfo(event.target);
@@ -224,10 +266,11 @@ package
 			
 			_spriteSheetList.push(_spriteSheetTextField);
 			
-			if(_numberOfSpriteSheet == _spriteSheetList.length)
+			if(_numberOfPNG == _spriteSheetList.length)
 			{
 				for(var i:int = 0; i < _spriteSheetList.length; ++i)
 				{
+					trace(_spriteSheetList[i]);
 					_spriteSheetList[i].x = 50;
 					_spriteSheetList[i].y = 624 + (i * 24);
 					_spr.visible = false;
@@ -249,6 +292,8 @@ package
 				
 				_spr.addEventListener(TouchEvent.TOUCH, onSelectSpriteSheetList);
 				addChild(_spr);
+				
+				//loadXML(_xmlURL);
 				
 			}
 		}

@@ -11,8 +11,7 @@ package
 	{
 		private var _playButton:Image;
 		private var _pauseButton:Image;
-		private var _deleteButton:Image;	
-		
+		private var _deleteButton:Image;			
 		
 		private var _content:Image;
 		
@@ -148,5 +147,7 @@ package
 				trace("삭제버튼");
 			}
 		}
+		
+		
 	}
 }
