@@ -34,7 +34,7 @@ package
 		private var _xmlDic:Dictionary = new Dictionary();
 		private var _pieceImageInfo:Vector.<ImageData>;
 		//public static var _pieceImageArray:Vector.<Image> = new Vector.<Image>;					//조각난 이미지들을 담는 배열
-		private var _pieceImageDic:Dictionary;				 								//조각난 이미지들을 담는 딕셔너리
+		private var _pieceImageDic:Dictionary = new Dictionary();				 								//조각난 이미지들을 담는 딕셔너리
 		private var _imageDic:Dictionary = new Dictionary();
 		private var _numberOfPNG:int;
 		private var _numberOfXML:int;
