@@ -3,7 +3,6 @@ package
 	import flash.display.BitmapData;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
-	import flash.events.Event;
 	import flash.events.FileListEvent;
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
@@ -30,17 +29,17 @@ package
 		private var _selectSpriteSheetButton:Image;											//화살표버튼
 		
 		
-		public static var _spriteSheetDic:Dictionary = new Dictionary();					//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 딕셔너리에 추가됨
-		public static var _scaledSpriteSheetDic:Dictionary = new Dictionary();					//위와 같지만 이미지 크기를 1/4로 줄인 이미지가 담긴 딕셔너리
-		public static var _xmlDic:Dictionary = new Dictionary();
-		public static var _pieceImageInfo:Vector.<ImageData>;
+		private var _spriteSheetDic:Dictionary = new Dictionary();							//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 딕셔너리에 추가됨
+		private var _scaledSpriteSheetDic:Dictionary = new Dictionary();					//위와 같지만 이미지 크기를 1/4로 줄인 이미지가 담긴 딕셔너리
+		private var _xmlDic:Dictionary = new Dictionary();
+		private var _pieceImageInfo:Vector.<ImageData>;
 		//public static var _pieceImageArray:Vector.<Image> = new Vector.<Image>;					//조각난 이미지들을 담는 배열
-		public static var _pieceImageDic:Dictionary;				 					//조각난 이미지들을 담는 딕셔너리
-		public static var _imageDic:Dictionary = new Dictionary();
+		private var _pieceImageDic:Dictionary;				 								//조각난 이미지들을 담는 딕셔너리
+		private var _imageDic:Dictionary = new Dictionary();
 		private var _numberOfPNG:int;
 		private var _numberOfXML:int;
 	
-		private var _currentSpriteSheet:TextField = new TextField(240, 24, "");				//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
+		private var _currentTextField:TextField = new TextField(240, 24, "");				//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
 		
 		private var _pieceSpr:Sprite = new Sprite();
 		
@@ -51,6 +50,36 @@ package
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
 		}
 		
+		public function get currentTextField():TextField
+		{
+			return _currentTextField;
+		}
+
+		public function set currentTextField(value:TextField):void
+		{
+			_currentTextField = value;
+		}
+
+		public function get pieceImageDic():Dictionary
+		{
+			return _pieceImageDic;
+		}
+
+		public function set pieceImageDic(value:Dictionary):void
+		{
+			_pieceImageDic = value;
+		}
+
+		public function get imageDic():Dictionary
+		{
+			return _imageDic;
+		}
+
+		public function set imageDic(value:Dictionary):void
+		{
+			_imageDic = value;
+		}
+
 		/**
 		 * 
 		 * @param guiArray 로드된 이미지들
@@ -83,13 +112,13 @@ package
 						break;
 				}
 			}
-			_currentSpriteSheet.x = 50;
-			_currentSpriteSheet.y = 600;
+			_currentTextField.x = 50;
+			_currentTextField.y = 600;
 			
-			_pieceSpr.pivotX = 
+			//_pieceSpr.alignPivot("center", "center"); 
 			_pieceSpr.x = 500;
 			_pieceSpr.y = 300;
-			addChild(_currentSpriteSheet);
+			addChild(_currentTextField);
 		
 		}
 		
@@ -139,6 +168,7 @@ package
 			if(touch)
 			{
 				//trace("로드스프라이트시트버튼");
+				//이미지 파일만 여는 예외처리 필요
 				var file:File = File.applicationDirectory;
 				file.browseForOpenMultiple("Select SpriteSheet Files");
 				file.addEventListener(FileListEvent.SELECT_MULTIPLE, onFilesSelected);
@@ -174,24 +204,18 @@ package
 			}
 		}
 		
-//		private function getDictionaryLength(dic:Dictionary):int
-//		{1``
-//			var length:int;
-//			
-//			for(var key in dic)
-//			{
-//				length++;
-//			}
-//			
-//			return length;
-//		}
 		
+		/**
+		 * 선택한 png와 그 이름과 동일한 xml이 모두 로드됬는지 검사하는 메소드 
+		 * 모두 로드됬다면 xml을 읽어서 딕셔너리에 저장함
+		 */
 		private function completeAll():void
 		{
 			if(_numberOfPNG == _spriteSheetList.length && _numberOfXML == FunctionMgr.getDictionaryLength(_xmlDic))
 			{
 				readXML();
-				//makePieceImage(name);
+				
+				
 			}
 		}
 
@@ -205,7 +229,7 @@ package
 			
 			var xml:XML = new XML(event.currentTarget.data);
 			//trace(event.currentTarget.data.name);
-			trace(xml.attribute("ImagePath"));
+			//trace(xml.attribute("ImagePath"));
 			
 			var name:String = FunctionMgr.removeExtension(xml.attribute("ImagePath"));
 			
@@ -213,20 +237,6 @@ package
 			_xmlDic[name] = xml;
 			
 			completeAll();
-			
-			//_peaceImageInfo
-			
-			
-			//xml이 다 로드되면
-//			if(_xmlArray.length == _numberOfXML)
-//			{
-//				trace("xml 로드 완료");
-//				for(var i:int=0; i<_xmlArray.length; ++i)
-//				{
-//					//trace(_xmlArray[i].child("SubTexture")[0].attribute("name"));
-//					//trace(_xmlArray[i]);
-//				}
-//			}
 		}
 		
 		private function readXML():void
@@ -245,59 +255,24 @@ package
 					imageData.rect.width = _xmlDic[key].child("SubTexture")[i].attribute("width");
 					imageData.rect.height = _xmlDic[key].child("SubTexture")[i].attribute("height");
 					
-					 trace(key);
+					 //trace(key);
 					//_pieceImageInfo.push(imageData);
 					var pieceTexture:Texture = Texture.fromTexture(_spriteSheetDic[key].texture, imageData.rect);
 					var pieceImage:Image = new Image(pieceTexture);
-					pieceImage.visible = false;
+					
+					imageData.image = pieceImage;
+					//pieceImage.visible = false;
 					//_pieceImageArray.push(pieceImage);
-					_pieceImageDic[imageData.name] = pieceImage; 
+					_pieceImageDic[imageData.name] = imageData; 
 					//_pieceSpr.addChild(pieceImage);
 				}
 				
 				_imageDic[key] = _pieceImageDic;
-				
-				//addChild(_pieceSpr);
-//				for(var j:int = 0; j < _pieceImageInfo.length; ++j )
-//				{
-//					//여기서 에러남
-//					var pieceImage:Texture = Texture.fromTexture(_spriteSheetDic["sprite_sheet0"].texture, _pieceImageInfo[j].rect);
-//					var spr:Sprite = new Sprite();
-//					spr.addChild(new Image(pieceImage));
-//					_pieceImageArray.push(pieceImage);
-//					_pieceImageDic[key] = _pieceImageArray;
-//				}
-				
-				//var spr:Sprite = new Sprite();
-				//addChild(_pieceImageDic[key]);
-				
-				//makePieceImage(key);
+		
 			}
 			
 			
 		}
-		
-//		private function makePieceImage(name:String):void
-//		{
-//			for(var i:int = 0; i < _pieceImageInfo.length; ++i)
-//			{
-//				//이미지를 자름
-//				var pieceImage:Texture = Texture.fromTexture(_spriteSheetDic[name].texture, _pieceImageInfo[i].rect);
-//				
-//				_pieceImageDic[name] = pieceImage;
-//				_pieceImageArray.push(pieceImage);
-//			}
-//		}
-//		
-//		private function replaceExtensionPngToXml(text:String):String
-//		{
-//			var result:String = text;
-//			var dot:int = result.lastIndexOf(".");
-//			result = result.substring(0, dot);		
-//			result += ".xml";
-//			
-//			return result;
-//		}
 		
 		
 		/**
@@ -385,10 +360,10 @@ package
 					_spr.addChild(_spriteSheetList[i]);
 					if(i == _spriteSheetList.length - 1)
 					{
-						_currentSpriteSheet.text = _spriteSheetList[i].name;
-						_currentSpriteSheet.name = _spriteSheetList[i].name;
+						_currentTextField.text = _spriteSheetList[i].name;
+						_currentTextField.name = _spriteSheetList[i].name;
 					
-						_scaledSpriteSheetDic[_currentSpriteSheet.text].visible = true;
+						_scaledSpriteSheetDic[_currentTextField.text].visible = true;
 					}
 				}
 				
@@ -414,7 +389,7 @@ package
 				if(touch)
 				{
 					trace(touch.target.name);
-					_currentSpriteSheet.text = touch.target.name;
+					_currentTextField.text = touch.target.name;
 					_spr.visible = false;
 					
 					//딕셔너리를 순회하여 모든 작은이미지들의 visible을 끄고, 선택된 이미지의 visible만 true로 함
@@ -422,7 +397,10 @@ package
 					{
 						_scaledSpriteSheetDic[key].visible = false;
 					}
-					_scaledSpriteSheetDic[_currentSpriteSheet.text].visible = true;	
+					_scaledSpriteSheetDic[_currentTextField.text].visible = true;	
+					
+					dispatchEvent(new Event("selected"));
+					
 				}
 			}			
 			

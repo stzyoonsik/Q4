@@ -13,7 +13,7 @@ package
 		private var _pauseButton:Image;
 		private var _deleteButton:Image;			
 		
-		private var _content:Image;
+		
 		
 		public function AnimationMode()
 		{
@@ -51,14 +51,7 @@ package
 						_deleteButton.y = 532;
 						addChild(_deleteButton);
 						break;
-					case "content":
-						_content = new Image(guiArray[i].texture);
-						_content.pivotX = _content.width / 2;
-						_content.pivotY = _content.height / 2;
-						_content.x = 450;
-						_content.y = 250;
-						addChild(_content);
-						break;
+					
 				}
 			}
 		}

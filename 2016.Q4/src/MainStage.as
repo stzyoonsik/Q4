@@ -11,6 +11,7 @@ package
 	import starling.events.TouchPhase;
 	import starling.text.TextField;
 	import starling.textures.Texture;
+	import flash.utils.Dictionary;
 
 	public class MainStage extends Sprite
 	{
@@ -23,7 +24,7 @@ package
 		
 		private var _fileStream:FileStream;
 		
-		
+		private var _content:Image;
 		
 		private var _animationModeOnButton:Image;
 		private var _animationModeOffButton:Image;
@@ -76,13 +77,18 @@ package
 				moveToImage(_loadResource.imageDataArray);
 				init();
 				
-				_animationMode.init(_guiArray);
-				var animationModeSprite:Sprite = _animationMode;				
-				addChild(animationModeSprite);
+				_animationMode.init(_guiArray);			
+				addChild(_animationMode);
+				
+				_imageMode.init(_guiArray);
+				_imageMode.visible = false;
+				addChild(_imageMode);
 				
 				_spriteSheet.init(_guiArray);
-				var spriteSheetSprite:Sprite = _spriteSheet;
-				addChild(spriteSheetSprite);
+				_spriteSheet.addEventListener("selected", onSelectedSpriteSheet);
+				addChild(_spriteSheet);
+				
+				
 			}
 		}
 		
@@ -145,6 +151,15 @@ package
 						_imageModeOnButton.visible = false;
 						addChild(_imageModeOnButton);
 						break;
+					case "content":
+						_content = new Image(_guiArray[i].texture);
+						_content.pivotX = _content.width / 2;
+						_content.pivotY = _content.height / 2;
+						_content.x = 450;
+						_content.y = 250;
+						addChild(_content);
+						
+						break;
 			
 				}
 			}
@@ -181,6 +196,7 @@ package
 				_imageModeOffButton.visible = true;
 				
 				_animationMode.visible = true;
+				_imageMode.visible = false;
 			}
 		}
 		
@@ -196,6 +212,7 @@ package
 				_imageModeOffButton.visible = true;
 				
 				_animationMode.visible = true;
+				_imageMode.visible = false;
 			}
 		}
 		
@@ -212,6 +229,7 @@ package
 				_imageModeOffButton.visible = false;
 				
 				_animationMode.visible = false;
+				_imageMode.visible = true;
 				
 			}
 		}
@@ -229,7 +247,32 @@ package
 				_imageModeOffButton.visible = false;
 				
 				_animationMode.visible = false;
+				_imageMode.visible = true;
 			}
+		}
+		
+		private function onSelectedSpriteSheet():void
+		{
+			//_imageMode.setList();
+			var dic:Dictionary = _spriteSheet.imageDic;
+			var pieceDic:Dictionary = dic[_spriteSheet.currentTextField.text];
+			
+//			var tempSpr:Sprite = new Sprite();
+//			tempSpr.width = 400;
+//			tempSpr.height = 400;
+//			tempSpr.alignPivot("center", "center");
+//			
+//			tempSpr.x = 600;
+//			tempSpr.y = 150;
+			
+			trace(pieceDic);
+			for(var key:String in pieceDic)
+			{
+				//tempSpr.addChild(pieceDic[key].image);
+				trace(pieceDic[key].name);
+			}
+			//_spriteSheet.addChild(tempSpr);
+			
 		}
 	}
 }

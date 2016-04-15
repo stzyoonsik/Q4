@@ -3,10 +3,13 @@ package
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	
+	import starling.display.Image;
+	
 	public class ImageData
 	{
 		private var _name:String;
 		private var _rect:Rectangle = new Rectangle();
+		private var _image:Image;
 		
 		private var _bitmapData:BitmapData;
 		
@@ -14,6 +17,16 @@ package
 		{
 		}
 		
+		public function get image():Image
+		{
+			return _image;
+		}
+
+		public function set image(value:Image):void
+		{
+			_image = value;
+		}
+
 		public function get bitmapData():BitmapData
 		{
 			return _bitmapData;
