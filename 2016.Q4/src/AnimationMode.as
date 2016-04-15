@@ -20,7 +20,7 @@ package
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
 		}
 		
-		public function init(guiArray:Array):void
+		public function init(guiArray:Vector.<Image>):void
 		{
 			trace("init");
 			for(var i:int = 0; i<guiArray.length; ++i)

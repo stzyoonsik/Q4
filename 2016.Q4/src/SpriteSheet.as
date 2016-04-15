@@ -9,6 +9,7 @@ package
 	import flash.filesystem.File;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.utils.Dictionary;
 	
 	import starling.display.Image;
 	import starling.display.Sprite;
@@ -25,13 +26,14 @@ package
 		
 		private var _spr:Sprite = new Sprite();										//스프라이트시트 텍스트필드 를 담는 Sprite
 		private var _spriteSheetTextField:TextField;								//현재 선택된 스프라이트시트의 이름을 나타내는 텍스트필드
-		private var _spriteSheetList:Array = new Array();							//스프라이트시트 텍스트필드를 담는 배열
+		private var _spriteSheetList:Vector.<TextField> = new Vector.<TextField>;	//스프라이트시트 텍스트필드를 담는 배열
 		private var _selectSpriteSheetButton:Image;									//화살표버튼
 		
-		public static var _spriteSheetArray:Array = new Array();						//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 배열에 푸쉬됨
-		private var _scaledSpriteSheetArray:Array = new Array();					//위 배열과 같지만 이미지 크기를 1/4로 줄인 배열
 		
-		public static var _xmlArray:Array = new Array();							
+		public static var _spriteSheetDic:Dictionary = new Dictionary();			//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 딕셔너리에 추가됨
+		private var _scaledSpriteSheetDic:Dictionary = new Dictionary();			//위와 같지만 이미지 크기를 1/4로 줄인 이미지가 담긴 딕셔너리
+		
+		public static var _xmlArray:Vector.<XML> = new Vector.<XML>;							
 		private var _xmlURL:String;
 		
 		private var _numberOfPNG:int;
@@ -39,7 +41,8 @@ package
 	
 		private var _currentSpriteSheet:TextField = new TextField(240, 24, "");		//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
 		
-		public static var _imageArray:Array;							//조각난 각각의 이미지를 담는 배열
+		public static var _imageArray:Vector.<Image> = new Vector.<Image>;			//조각난 각각의 이미지를 담는 배열
+		
 		
 		
 		
@@ -53,7 +56,7 @@ package
 		 * @param guiArray 로드된 이미지들
 		 * 초기화 메소드
 		 */
-		public function init(guiArray:Array):void
+		public function init(guiArray:Vector.<Image>):void
 		{
 			//trace("init");
 			for(var i:int = 0; i<guiArray.length; ++i)
@@ -96,7 +99,7 @@ package
 		/**
 		 * 
 		 * @param event 클릭
-		 * 
+		 * 화살표 버튼을 클릭하면 드롭다운을 보여주는 이벤트리스너
 		 */
 		private function onSelectSpriteSheetButton(event:TouchEvent):void
 		{
@@ -151,19 +154,19 @@ package
 			for (var i:int = 0; i < event.files.length; ++i) 
 			{
 				//trace(event.files[i].nativePath);
+				//PNG 로드
 				var loader:Loader = new Loader();				
 				loader.load(new URLRequest(event.files[i].url));				
 				loader.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE, onLoaderComplete);				
 				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderFailed);
 				
+				
+				//XML 로드
 				_xmlURL = event.files[i].url;
 				var xmlURL:String = event.files[i].url;
 				var dot:int = xmlURL.lastIndexOf(".");
 				xmlURL = xmlURL.substring(0, dot);		
 				xmlURL += ".xml";
-				
-				trace(xmlURL);
-				
 				
 				var urlLoader:URLLoader = new URLLoader();				
 				urlLoader.addEventListener(flash.events.Event.COMPLETE, onXMLLoaderComplete);
@@ -179,8 +182,6 @@ package
 			_xmlArray.push(xml);
 			
 			//xml이 다 로드되면
-			//trace(_xmlArray.length);
-			//trace(_numberOfSpriteSheet);
 			if(_xmlArray.length == _numberOfXML)
 			{
 				trace("xml 로드 완료");
@@ -189,7 +190,6 @@ package
 					trace(_xmlArray[i].child("SubTexture")[0].attribute("name"));
 					//trace(_xmlArray[i]);
 				}
-				//_imageArray.push();
 			}
 		}
 		/**
@@ -216,9 +216,8 @@ package
 			name = name.substring(slash + 1, dot);			
 			image.name = name;			
 			
-			//원본 스프라이트시트 배열에 푸쉬
-			_spriteSheetArray.push(image);
-			
+			//원본 스프라이트시트 딕셔너리에 추가
+			_spriteSheetDic[name] = image;
 			
 			//보여주기용 스프라이트시트 세팅
 			image.scale = 0.25;
@@ -230,7 +229,11 @@ package
 			scaledSpriteSheet.x = 150;
 			scaledSpriteSheet.y = 150;
 			scaledSpriteSheet.visible = false;
-			_scaledSpriteSheetArray.push(scaledSpriteSheet);
+			
+			//딕셔너리에 추가
+			_scaledSpriteSheetDic[name] = scaledSpriteSheet;
+			
+			
 			addChild(scaledSpriteSheet);
 			
 			
@@ -240,9 +243,6 @@ package
 			
 			
 			loaderInfo.removeEventListener(flash.events.Event.COMPLETE, onLoaderComplete);
-			
-			
-			
 		}
 		
 		private function onLoaderFailed(event:flash.events.Event):void
@@ -279,22 +279,13 @@ package
 					{
 						_currentSpriteSheet.text = _spriteSheetList[i].name;
 						_currentSpriteSheet.name = _spriteSheetList[i].name;
-						
-						for(var j:int = 0; j < _scaledSpriteSheetArray.length; ++j)
-						{
-							if(_scaledSpriteSheetArray[j].name == _currentSpriteSheet.text)
-							{
-								_scaledSpriteSheetArray[j].visible = true;
-							}
-						}
+					
+						_scaledSpriteSheetDic[_currentSpriteSheet.text].visible = true;
 					}
 				}
 				
 				_spr.addEventListener(TouchEvent.TOUCH, onSelectSpriteSheetList);
 				addChild(_spr);
-				
-				//loadXML(_xmlURL);
-				
 			}
 		}
 		
@@ -316,20 +307,12 @@ package
 					_currentSpriteSheet.text = touch.target.name;
 					_spr.visible = false;
 					
-					for(var j:int = 0; j<_scaledSpriteSheetArray.length; ++j)
+					//딕셔너리를 순회하여 모든 작은이미지들의 visible을 끄고, 선택된 이미지의 visible만 true로 함
+					for(var key:String in _scaledSpriteSheetDic)
 					{
-						//trace(_spriteSheetArray[i].name);
-						
-						if(_scaledSpriteSheetArray[j].name == _currentSpriteSheet.text)
-						{
-							_scaledSpriteSheetArray[j].visible = true;
-						}
-						else
-						{
-							_scaledSpriteSheetArray[j].visible = false;
-						}
-						
+						_scaledSpriteSheetDic[key].visible = false;
 					}
+					_scaledSpriteSheetDic[_currentSpriteSheet.text].visible = true;	
 				}
 			}			
 			

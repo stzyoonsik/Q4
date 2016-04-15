@@ -8,22 +8,24 @@ package
 	import flash.filesystem.File;
 	import flash.net.URLRequest;
 	
+	import starling.display.Image;
+	
 	//import starling.events.Event;
 
 	public class GUILoader
 	{
 		private var _completeFunc:Function;	
-		private var _urlArray:Array = new Array();					//파일명이 담긴 배열
-		private var _imageDataArray:Array = new Array();			//ImageData가 담긴 배열 
+		private var _urlArray:Vector.<String> = new Vector.<String>;					//파일명이 담긴 배열
+		private var _imageDataArray:Vector.<ImageData> = new Vector.<ImageData>;			//ImageData가 담긴 배열 
 		
 		private var _fileCount:int;
 		
-		public function get imageDataArray():Array
+		public function get imageDataArray():Vector.<ImageData>
 		{
 			return _imageDataArray;
 		}
 		
-		public function set imageDataArray(value:Array):void
+		public function set imageDataArray(value:Vector.<ImageData>):void
 		{
 			_imageDataArray = value;
 		}

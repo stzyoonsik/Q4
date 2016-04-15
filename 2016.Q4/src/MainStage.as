@@ -19,7 +19,7 @@ package
 		private var _spriteSheet:SpriteSheet = new SpriteSheet();
 		private var _loadResource:GUILoader;
 		
-		private var _guiArray:Array = new Array();									//gui 리소스가 담긴 배열
+		private var _guiArray:Vector.<Image> = new Vector.<Image>;									//gui 리소스가 담긴 배열
 		
 		private var _fileStream:FileStream;
 		
@@ -92,7 +92,7 @@ package
 		 * @return Image 타입의 어레이
 		 * ImageData의 비트맵데이터와 이름을 Image에 옮기는 메소드
 		 */
-		private function moveToImage(loadedImageArray:Array):void
+		private function moveToImage(loadedImageArray:Vector.<ImageData>):void
 		{
 			for(var i:int = 0; i<loadedImageArray.length; ++i)
 			{				
