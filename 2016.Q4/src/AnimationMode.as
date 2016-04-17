@@ -88,6 +88,7 @@ package
 			if(touch)
 			{
 				trace("플레이버튼");
+				dispatchEvent(new Event("Play"));
 			}
 		}
 		
@@ -113,6 +114,7 @@ package
 			if(touch)
 			{
 				trace("퍼즈버튼");
+				dispatchEvent(new Event("Pause"));
 			}
 		}
 		
@@ -138,6 +140,7 @@ package
 			if(touch)
 			{
 				trace("삭제버튼");
+				dispatchEvent(new Event("Delete"));
 			}
 		}
 		

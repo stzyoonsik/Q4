@@ -1,6 +1,6 @@
 package
 {	
-
+	
 	import flash.filesystem.FileStream;
 	import flash.utils.Dictionary;
 	
@@ -12,7 +12,7 @@ package
 	import starling.events.TouchPhase;
 	import starling.text.TextField;
 	import starling.textures.Texture;
-
+	
 	public class MainStage extends Sprite
 	{
 		private var _animationMode:AnimationMode = new AnimationMode();
@@ -36,11 +36,7 @@ package
 		
 		private var _spriteVector:Vector.<TextField> = new Vector.<TextField>;
 		
-		private var _listSpr:Vector.<Sprite> = new Vector.<Sprite>;
-		
-		//private var 
-		
-		//private var _showSpr:Sprite = new Sprite();
+		//private var _
 		
 		
 		public function MainStage()
@@ -49,8 +45,8 @@ package
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);				
 		}
 		
-	
-
+		
+		
 		/**
 		 * 모든 터치 이벤트를 관장하는 이벤트 리스너 
 		 * @param event
@@ -75,12 +71,12 @@ package
 		{	
 			
 			//얼마나 로딩됬는지를 나타냄
-			if(_loadResource.imageDataArray.length / _loadResource.fileCount != 1)
-				trace((_loadResource.imageDataArray.length / _loadResource.fileCount * 100).toFixed(1));
-			else if(_loadResource.imageDataArray.length / _loadResource.fileCount == 1)
-				trace("이미지 로딩 완료");
-			else
-				trace("이미지 로딩 실패");
+//			if(_loadResource.imageDataArray.length / _loadResource.fileCount != 1)
+//				trace((_loadResource.imageDataArray.length / _loadResource.fileCount * 100).toFixed(1));
+//			else if(_loadResource.imageDataArray.length / _loadResource.fileCount == 1)
+//				trace("이미지 로딩 완료");
+//			else
+//				trace("이미지 로딩 실패");
 			
 			//모두 로딩이 됬다면
 			if(_loadResource.imageDataArray.length == _loadResource.fileCount)
@@ -91,19 +87,17 @@ package
 				_spriteSheet.init(_guiArray);
 				_spriteSheet.addEventListener("selected", onSelectedSpriteSheet);
 				addChild(_spriteSheet);
-				trace(_spriteSheet.bounds);
+				
 				
 				_animationMode.init(_guiArray);	
-				trace(_animationMode.bounds);
+				_animationMode.addEventListener("Play", onPlay);
+				_animationMode.addEventListener("Pause", onPause);
+				_animationMode.addEventListener("Delete", onDelete);
 				addChild(_animationMode);
 				
-				//이미지 모드의 sprite 크기를 줄여야함
 				_imageMode.init(_guiArray);
 				_imageMode.visible = false;
-				_imageMode.addEventListener("arrowUp", onArrowUp);
-				_imageMode.addEventListener("arrowDown", onArrowDown);
 				addChild(_imageMode);
-				trace(_imageMode.bounds);
 				
 				
 				
@@ -179,7 +173,7 @@ package
 						addChild(_content);
 						
 						break;
-			
+					
 				}
 			}
 			
@@ -235,7 +229,7 @@ package
 			}
 		}
 		
-
+		
 		private function onTouchRadioImageModeOn(event:TouchEvent):void
 		{
 			var touch:Touch = event.getTouch(_imageModeOnButton, TouchPhase.ENDED);
@@ -270,31 +264,36 @@ package
 			}
 		}
 		
+		
+		/**
+		 * 이미지모드 - 왼쪽에서 스프라이트시트를 선택하면 오른쪽에 안에 들어있는 이미지들을 순차적으로 담는 메소드 
+		 * 
+		 */		
 		private function onSelectedSpriteSheet():void
 		{
-			//_imageMode.setList();
+			trace("스프라이트 시트 선택함");
+			_imageMode.currentPage = 0;
 			var dic:Dictionary = _spriteSheet.imageDic;
 			var pieceDic:Dictionary = dic[_spriteSheet.currentTextField.text];
 			
-//			var tempSpr:Sprite = new Sprite();
-//			tempSpr.width = 400;
-//			tempSpr.height = 400;
-//			tempSpr.alignPivot("center", "center");
-//			
-//			tempSpr.x = 600;
-//			tempSpr.y = 150;
 			
-			trace(pieceDic);
-			var temp:int;
+			//trace(pieceDic);
+			var setY:int;
 			var count:int;
+			var length:int = FunctionMgr.getDictionaryLength(pieceDic);
+			
+			_imageMode.spriteListVector = new Vector.<Sprite>;
+			_imageMode.listSpr = new Sprite();
+			_imageMode.listSpr.x = 600;
+			_imageMode.listSpr.y = 524;
+			_imageMode.listSpr.visible = false;
+			
 			for(var key:String in pieceDic)
 			{
 				count++;
-				//tempSpr.addChild(pieceDic[key].image);
-				trace(pieceDic[key].name);
 				
 				var textField:TextField = new TextField(200,24, pieceDic[key].name); 
-				textField.y = temp;
+				textField.y = setY;
 				
 				textField.border = true;
 				textField.name = pieceDic[key].name;
@@ -302,35 +301,45 @@ package
 				
 				_imageMode.listSpr.addChild(textField);
 				
-				if(count < 5)
+				
+				if(count % 5 != 0)
 				{
-					temp += 24;
-					//마지막에 5장 미만의 갯수가 남아있을때를 처리해줘야함
+					setY += 24;
 				}
 				else
 				{
-					_listSpr.push(_imageMode.listSpr);
-					_imageMode.listSpr.dispose();
-					count = 0;
-					temp = 0;
-					//_imageMode.listSpr.r
+					_imageMode.listSpr.addEventListener(TouchEvent.TOUCH, onSelectSpriteList);
 					
+					_imageMode.spriteListVector.push(_imageMode.listSpr);
+					_imageMode.listSpr.visible = false;
+					_imageMode.addChild(_imageMode.listSpr);
+					_imageMode.listSpr = new Sprite();
+					_imageMode.listSpr.x = 600;
+					_imageMode.listSpr.y = 524;
+					
+					setY = 0;					
 				}
 				
-				
-					
-					
+				if(count == length)
+				{
+					_imageMode.listSpr.addEventListener(TouchEvent.TOUCH, onSelectSpriteList);					
+					_imageMode.spriteListVector.push(_imageMode.listSpr);
+					_imageMode.listSpr.visible = false;
+					_imageMode.addChild(_imageMode.listSpr);
+				}
 			}
-			_imageMode.listSpr.addEventListener(TouchEvent.TOUCH, onSelectSpriteList);
-			//_spriteSheet.addChild(tempSpr);
 			
-			//trace(_imageMode.pieceImage);
-			_imageMode.spriteSheetList.push();
 			
 		}
 		
+		/**
+		 * 
+		 * @param event 텍스트 필드 클릭
+		 * 이미지모드 - 텍스트 필드를 클릭하면 해당 이름의 이미지를 화면에 띄워주는 메소드 
+		 */
 		private function onSelectSpriteList(event:TouchEvent):void
 		{
+			//trace("리스트 클릭");
 			for(var i:int = 0; i<_spriteVector.length; ++i)
 			{
 				var touch:Touch = event.getTouch(_spriteVector[i], TouchPhase.ENDED);
@@ -338,52 +347,35 @@ package
 				{
 					
 					trace(touch.target.name);
-					_imageMode.pieceImage.texture = _spriteSheet.pieceImageDic[touch.target.name].image.texture;
-					_imageMode.pieceImage.width = _spriteSheet.pieceImageDic[touch.target.name].rect.width;
-					_imageMode.pieceImage.height = _spriteSheet.pieceImageDic[touch.target.name].rect.height;
-					//_imageMode.pieceImage.pivotX = _imageMode.pieceImage.width / 2;
-					//_imageMode.pieceImage.pivotY = _imageMode.pieceImage.height / 2;
+					_imageMode.pieceImage.texture = _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].image.texture;
+					_imageMode.pieceImage.width = _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].rect.width;
+					_imageMode.pieceImage.height = _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].rect.height;
 					_imageMode.pieceImage.alignPivot("center", "center");
 					_imageMode.pieceImage.x = 600;
 					_imageMode.pieceImage.y = 250;
-					//trace(_spriteSheet.pieceImageDic[touch.target.name].image);
-					//_imageMode.pieceImage.visible = true;
 					
-					_imageMode.listSpr.visible = false;
+					FunctionMgr.makeVisibleFalse(_imageMode.spriteListVector);
 					
-					trace(_animationMode.bounds);
-					trace(_imageMode.bounds);
-					trace(_spriteSheet.bounds);
+					_imageMode.makeArrowVisibleFalse();
+					_imageMode.currentSpriteSheet.text =  _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].name;
 				}
 			}
 		}
 		
-		private function onArrowUp():void
+		
+		private function onPlay():void
 		{
-			trace("UP");
-			trace(_imageMode.currentPage);
-			for(var i:int = 0; i<_listSpr.length; ++i)
-			{
-				_listSpr[i].visible = false;
-				if(_imageMode.currentPage == i)
-				{
-					_listSpr[i].visible = true;
-				}
-			}
+			
 		}
 		
-		private function onArrowDown():void
+		private function onPause():void
 		{
-			trace("DOWN");
-			trace(_imageMode.currentPage);
-			for(var i:int = 0; i<_listSpr.length; ++i)
-			{
-				_listSpr[i].visible = false;
-				if(_imageMode.currentPage == i)
-				{
-					_listSpr[i].visible = true;
-				}
-			}
+			
+		}
+		
+		private function onDelete():void
+		{
+			
 		}
 	}
 }

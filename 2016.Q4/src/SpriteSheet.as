@@ -32,16 +32,18 @@ package
 		private var _spriteSheetDic:Dictionary = new Dictionary();							//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 딕셔너리에 추가됨
 		private var _scaledSpriteSheetDic:Dictionary = new Dictionary();					//위와 같지만 이미지 크기를 1/4로 줄인 이미지가 담긴 딕셔너리
 		private var _xmlDic:Dictionary = new Dictionary();
-		private var _pieceImageInfo:Vector.<ImageData>;
-		//public static var _pieceImageArray:Vector.<Image> = new Vector.<Image>;					//조각난 이미지들을 담는 배열
-		private var _pieceImageDic:Dictionary = new Dictionary();				 								//조각난 이미지들을 담는 딕셔너리
-		private var _imageDic:Dictionary = new Dictionary();
+		
+		private var _pieceImageVectorAMode:Vector.<Image> = new Vector.<Image>;					//조각난 이미지들을 담는 배열		- 애니메이션모드용
+		private var _sheetImageDicAMode:Dictionary = new Dictionary();
+		
+		private var _pieceImageDicIMode:Dictionary = new Dictionary();				 			//조각난 이미지들을 담는 딕셔너리	- 이미지모드용
+		private var _sheetImageDicIMode:Dictionary = new Dictionary();
+		
 		private var _numberOfPNG:int;
 		private var _numberOfXML:int;
 	
 		private var _currentTextField:TextField = new TextField(240, 24, "");				//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
 		
-		private var _pieceSpr:Sprite = new Sprite();
 		
 		
 		
@@ -50,6 +52,26 @@ package
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
 		}
 		
+		public function get pieceImageVectorAMode():Vector.<Image>
+		{
+			return _pieceImageVectorAMode;
+		}
+
+		public function set pieceImageVectorAMode(value:Vector.<Image>):void
+		{
+			_pieceImageVectorAMode = value;
+		}
+
+		public function get sheetImageDicAMode():Dictionary
+		{
+			return _sheetImageDicAMode;
+		}
+
+		public function set sheetImageDicAMode(value:Dictionary):void
+		{
+			_sheetImageDicAMode = value;
+		}
+
 		public function get currentTextField():TextField
 		{
 			return _currentTextField;
@@ -62,22 +84,22 @@ package
 
 		public function get pieceImageDic():Dictionary
 		{
-			return _pieceImageDic;
+			return _pieceImageDicIMode;
 		}
 
 		public function set pieceImageDic(value:Dictionary):void
 		{
-			_pieceImageDic = value;
+			_pieceImageDicIMode = value;
 		}
 
 		public function get imageDic():Dictionary
 		{
-			return _imageDic;
+			return _sheetImageDicIMode;
 		}
 
 		public function set imageDic(value:Dictionary):void
 		{
-			_imageDic = value;
+			_sheetImageDicIMode = value;
 		}
 
 		/**
@@ -115,9 +137,6 @@ package
 			_currentTextField.x = 50;
 			_currentTextField.y = 600;
 			
-			//_pieceSpr.alignPivot("center", "center"); 
-			_pieceSpr.x = 500;
-			_pieceSpr.y = 300;
 			addChild(_currentTextField);
 		
 		}
@@ -214,8 +233,6 @@ package
 			if(_numberOfPNG == _spriteSheetList.length && _numberOfXML == FunctionMgr.getDictionaryLength(_xmlDic))
 			{
 				readXML();
-				
-				
 			}
 		}
 
@@ -228,23 +245,23 @@ package
 		{
 			
 			var xml:XML = new XML(event.currentTarget.data);
-			//trace(event.currentTarget.data.name);
-			//trace(xml.attribute("ImagePath"));
 			
 			var name:String = FunctionMgr.removeExtension(xml.attribute("ImagePath"));
 			
-			//_xmlArray.push(xml);
 			_xmlDic[name] = xml;
 			
 			completeAll();
 		}
 		
+		/**
+		 * xml 파일을 읽어서 ImageMode와 AnimationMode에서 쓸 공간에 구조화하여 저장하는 메소드 
+		 * 
+		 */
 		private function readXML():void
 		{
 			for(var key:String in _xmlDic)
 			{
-				//_pieceImageInfo = new Vector.<ImageData>;		//xml에서 읽은 이미지를 조각낼 정보를 담는 배열
-				_pieceImageDic = new Dictionary();
+				_pieceImageDicIMode = new Dictionary();
 				
 				for(var i:int = 0; i < _xmlDic[key].child("SubTexture").length(); ++i)
 				{
@@ -255,19 +272,17 @@ package
 					imageData.rect.width = _xmlDic[key].child("SubTexture")[i].attribute("width");
 					imageData.rect.height = _xmlDic[key].child("SubTexture")[i].attribute("height");
 					
-					 //trace(key);
-					//_pieceImageInfo.push(imageData);
 					var pieceTexture:Texture = Texture.fromTexture(_spriteSheetDic[key].texture, imageData.rect);
 					var pieceImage:Image = new Image(pieceTexture);
 					
 					imageData.image = pieceImage;
-					//pieceImage.visible = false;
-					//_pieceImageArray.push(pieceImage);
-					_pieceImageDic[imageData.name] = imageData; 
-					//_pieceSpr.addChild(pieceImage);
+					_pieceImageVectorAMode.push(pieceImage);
+					
+					_pieceImageDicIMode[imageData.name] = imageData; 
 				}
 				
-				_imageDic[key] = _pieceImageDic;
+				_sheetImageDicIMode[key] = _pieceImageDicIMode;
+				_sheetImageDicAMode[key] = _pieceImageVectorAMode;
 		
 			}
 			
@@ -296,8 +311,7 @@ package
 			var name:String = loaderInfo.url;
 			var slash:int = name.lastIndexOf("/");
 			var dot:int = name.lastIndexOf(".");
-			name = name.substring(slash + 1, dot);			
-			//image.name = name;			
+			name = name.substring(slash + 1, dot);		
 			
 			//원본 스프라이트시트 딕셔너리에 추가
 			_spriteSheetDic[name] = image;
@@ -322,8 +336,6 @@ package
 			
 			
 			setSpriteSheetTextField(name);
-			
-			
 			
 			loaderInfo.removeEventListener(flash.events.Event.COMPLETE, onLoaderComplete);
 			completeAll();

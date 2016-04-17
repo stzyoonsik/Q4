@@ -1,7 +1,8 @@
 package
 {
 	import flash.utils.Dictionary;
-
+	import starling.display.Sprite;
+	
 	public class FunctionMgr
 	{
 		
@@ -36,6 +37,14 @@ package
 			}
 			
 			return length;
+		}
+		
+		public static function makeVisibleFalse(vector:Vector.<Sprite>):void
+		{
+			for(var i:int = 0; i<vector.length; ++i)
+			{
+				vector[i].visible = false;
+			}
 		}
 	}
 }
