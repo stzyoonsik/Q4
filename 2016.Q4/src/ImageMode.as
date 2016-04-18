@@ -11,10 +11,10 @@ package
 	
 	public class ImageMode extends Sprite
 	{
+		private var _saveButton:Image;
 		private var _arrowUp:Image;
 		private var _arrowDown:Image;
 		private var _currentPage:int;
-		//private var _pieceSpr:Sprite = new Sprite();
 		private var _pieceImage:Image = new Image(null);									//화면에 보여주기 용 스프라이트
 		private var _spriteListVector:Vector.<Sprite>;										//스프라이트시트 텍스트필드를 담는 배열									
 		private var _listSpr:Sprite = new Sprite();											//우측 하단 상하화살표버튼을 누르면 열리는 리스트
@@ -28,6 +28,26 @@ package
 			
 		}
 		
+		public function get saveButton():Image
+		{
+			return _saveButton;
+		}
+
+		public function set saveButton(value:Image):void
+		{
+			_saveButton = value;
+		}
+
+		public function get selectSpriteSheetButton():Image
+		{
+			return _selectSpriteSheetButton;
+		}
+
+		public function set selectSpriteSheetButton(value:Image):void
+		{
+			_selectSpriteSheetButton = value;
+		}
+
 		public function get currentImageTextField():TextField
 		{
 			return _currentImageTextField;
@@ -89,7 +109,7 @@ package
 						_selectSpriteSheetButton = new Image(guiArray[i].texture);
 						_selectSpriteSheetButton.x = 800;
 						_selectSpriteSheetButton.y = 500;
-						_selectSpriteSheetButton.visible = true;
+						_selectSpriteSheetButton.visible = false;
 						addChild(_selectSpriteSheetButton);						
 						break;
 					
@@ -107,6 +127,15 @@ package
 						_arrowDown.y = 600;
 						_arrowDown.visible = false;
 						addChild(_arrowDown);
+						break;
+					case "saveButton":
+						_saveButton = new Image(guiArray[i].texture);
+						_saveButton.pivotX = _saveButton.width / 2;
+						_saveButton.pivotY = _saveButton.height / 2;
+						_saveButton.x = 850;
+						_saveButton.y = 500;
+						_saveButton.visible = false;
+						addChild(_saveButton);
 						break;
 				}
 			}
@@ -140,6 +169,7 @@ package
 			_selectSpriteSheetButton.addEventListener(TouchEvent.TOUCH, onClickSpriteListButton);
 			_arrowUp.addEventListener(TouchEvent.TOUCH, onArrowUp);
 			_arrowDown.addEventListener(TouchEvent.TOUCH, onArrowDown);
+			_saveButton.addEventListener(TouchEvent.TOUCH, onSaveButton);
 		}
 		
 		/**
@@ -196,9 +226,9 @@ package
 			{
 				_arrowUp.visible = true;
 				_arrowDown.visible = true;
-				dispatchEvent(new Event("openSpriteList"));
 				
-				_spriteListVector[_currentPage].visible = true;
+				if(_spriteListVector[_currentPage] != null)
+					_spriteListVector[_currentPage].visible = true;
 			}
 		}
 		
@@ -213,6 +243,25 @@ package
 			_arrowDown.visible = false;
 		}
 		
+		private function onSaveButton(event:TouchEvent):void
+		{
+			var touch:Touch = event.getTouch(_saveButton, TouchPhase.BEGAN);
+			if(touch)
+			{
+				
+				_saveButton.scale = 0.8;
+			}
+			else
+			{
+				_saveButton.scale = 1;
+			}
+			
+			touch = event.getTouch(_saveButton, TouchPhase.ENDED);
+			if(touch)
+			{
+				dispatchEvent(new Event("save"));
+			}
+		}
 		
 	}
 }

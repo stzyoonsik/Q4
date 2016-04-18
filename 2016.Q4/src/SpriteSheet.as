@@ -1,11 +1,13 @@
 package
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.FileListEvent;
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
+	import flash.geom.Point;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
@@ -43,14 +45,11 @@ package
 	
 		private var _currentTextField:TextField = new TextField(240, 24, "");				//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
 		
-		
-		
-		
 		public function SpriteSheet()
-		{
+		{		
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
 		}
-		
+
 		public function get pieceImageVectorAMode():Vector.<Image>
 		{
 			return _pieceImageVectorAMode;
@@ -187,7 +186,7 @@ package
 				//trace("로드스프라이트시트버튼");
 				//이미지 파일만 여는 예외처리 필요
 				var file:File = File.applicationDirectory;
-				file.browseForOpenMultiple("Select SpriteSheet Files");
+				file.browseForOpenMultiple("Select SpriteSheet PNG Files");
 				file.addEventListener(FileListEvent.SELECT_MULTIPLE, onFilesSelected);
 			}
 		}
@@ -270,13 +269,19 @@ package
 					imageData.rect.width = _xmlDic[key].child("SubTexture")[i].attribute("width");
 					imageData.rect.height = _xmlDic[key].child("SubTexture")[i].attribute("height");
 					
-					var pieceTexture:Texture = Texture.fromTexture(_spriteSheetDic[key].texture, imageData.rect);
+					var pieceTexture:Texture = Texture.fromTexture(_spriteSheetDic[key].image.texture, imageData.rect);
 					var pieceImage:Image = new Image(pieceTexture);
+					
+					var pt:Point = new Point(0,0);
+					var pieceBitmapData:BitmapData = new BitmapData(imageData.rect.width, imageData.rect.height, false);
+					pieceBitmapData.copyPixels(_spriteSheetDic[key].bitmapData, imageData.rect, pt);
+					
 					
 					pieceImage.name = imageData.name;
 					imageData.image = pieceImage;
-					_pieceImageVectorAMode.push(pieceImage);
+					imageData.bitmapData = pieceBitmapData;
 					
+					_pieceImageVectorAMode.push(pieceImage);					
 					_pieceImageDicIMode[imageData.name] = imageData; 
 				}
 				
@@ -308,6 +313,9 @@ package
 			var texture:Texture = Texture.fromBitmapData(bitmapData);			
 			var image:Image = new Image(texture);
 			
+			var imageData:ImageData = new ImageData();
+			imageData.image = image;
+			imageData.bitmapData = bitmapData;
 			//이름 따오기
 			var name:String = loaderInfo.url;
 			var slash:int = name.lastIndexOf("/");
@@ -315,7 +323,7 @@ package
 			name = name.substring(slash + 1, dot);		
 			
 			//원본 스프라이트시트 딕셔너리에 추가
-			_spriteSheetDic[name] = image;
+			_spriteSheetDic[name] = imageData;
 			
 			//보여주기용 스프라이트시트 세팅
 			image.scale = 0.25;

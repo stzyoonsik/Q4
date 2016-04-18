@@ -2,8 +2,12 @@ package
 {	
 	
 	import flash.events.TimerEvent;
+	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import flash.utils.Timer;
 	
 	import starling.display.Image;
 	import starling.display.Sprite;
@@ -13,7 +17,6 @@ package
 	import starling.events.TouchPhase;
 	import starling.text.TextField;
 	import starling.textures.Texture;
-	import flash.utils.Timer;
 	
 	public class MainStage extends Sprite
 	{
@@ -24,7 +27,7 @@ package
 		
 		private var _guiArray:Vector.<Image> = new Vector.<Image>;									//gui 리소스가 담긴 배열
 		
-		private var _fileStream:FileStream;
+		
 		
 		private var _content:Image;
 		
@@ -100,6 +103,7 @@ package
 				addChild(_animationMode);
 				
 				_imageMode.init(_guiArray);
+				_imageMode.addEventListener("save", onClickSaveButton);
 				_imageMode.visible = false;
 				addChild(_imageMode);
 				
@@ -277,6 +281,8 @@ package
 			trace("스프라이트 시트 선택함");
 			_imageMode.currentPage = 0;
 			_animationMode.currentIndex = 0;
+			
+			_imageMode.selectSpriteSheetButton.visible = true;
 			var dic:Dictionary = _spriteSheet.sheetImageDicIMode;
 			var pieceDic:Dictionary = dic[_spriteSheet.currentTextField.text];
 			
@@ -351,6 +357,7 @@ package
 				var touch:Touch = event.getTouch(_spriteVector[i], TouchPhase.ENDED);
 				if(touch)
 				{
+					_imageMode.saveButton.visible = true;
 					
 					trace(touch.target.name);
 					_imageMode.pieceImage.texture = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].image.texture;
@@ -369,7 +376,6 @@ package
 					FunctionMgr.makeVisibleFalse(_imageMode.spriteListVector);
 					
 					_imageMode.makeArrowVisibleFalse();
-					//_imageMode.currentImageTextField.text =  _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].name;
 				}
 			}
 		}
@@ -448,6 +454,21 @@ package
 			_animationMode.timer.removeEventListener(TimerEvent.TIMER, onTimerStart);
 			_animationMode.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop);
 			
+		}
+		
+		/**
+		 * 
+		 * 디스패치된 저장 버튼 클릭 메소드 
+		 */
+		private function onClickSaveButton():void
+		{
+			var _pngFile:File = File.documentsDirectory.resolvePath(_spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][_imageMode.currentImageTextField.text].name + ".png");
+			var byteArray:ByteArray = PNGEncoder.encode(_spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][_imageMode.currentImageTextField.text].bitmapData);
+			
+			var _fileStream:FileStream = new FileStream();
+			_fileStream.open(_pngFile, FileMode.WRITE);
+			_fileStream.writeBytes(byteArray);
+			_fileStream.close();
 		}
 	}
 }
