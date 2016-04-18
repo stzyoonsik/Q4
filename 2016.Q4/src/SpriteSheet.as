@@ -22,21 +22,20 @@ package
 	public class SpriteSheet extends Sprite
 	{
 		private var _loadSpriteSheetsButton:Image;											//애니메이션모드, 이미지모드에서 공유됨. 스프라이트시트를 로드하는 버튼
-				
-		private var _spriteSheetSprite:Sprite = new Sprite();								//스프라이트시트 텍스트필드 를 담는 Sprite
-		private var _spriteSheetTextField:TextField;										//현재 선택된 스프라이트시트의 이름을 나타내는 텍스트필드
-		private var _spriteSheetVector:Vector.<TextField> = new Vector.<TextField>;			//스프라이트시트 텍스트필드를 담는 배열
 		private var _selectSpriteSheetButton:Image;											//화살표버튼
 		
+		private var _spriteSheetList:Sprite = new Sprite();									//스프라이트시트 텍스트필드 를 담는 Sprite		
+		private var _spriteSheetVector:Vector.<TextField> = new Vector.<TextField>;			//스프라이트시트 텍스트필드를 담는 배열
+		
+		private var _xmlDic:Dictionary = new Dictionary();
 		
 		private var _spriteSheetDic:Dictionary = new Dictionary();							//사용자가 Load SpriteSheets 버튼을 통해 스프라이트시트를 로드하면 이 딕셔너리에 추가됨
 		private var _scaledSpriteSheetDic:Dictionary = new Dictionary();					//위와 같지만 이미지 크기를 1/4로 줄인 이미지가 담긴 딕셔너리
-		private var _xmlDic:Dictionary = new Dictionary();
-		
-		private var _pieceImageVectorAMode:Vector.<Image>;// = new Vector.<Image>;					//조각난 이미지들을 담는 배열		- 애니메이션모드용
+				
+		private var _pieceImageVectorAMode:Vector.<Image>;									//조각난 이미지들을 담는 배열		- 애니메이션모드용
 		private var _sheetImageDicAMode:Dictionary = new Dictionary();
 		
-		private var _pieceImageDicIMode:Dictionary;// = new Dictionary();				 			//조각난 이미지들을 담는 딕셔너리	- 이미지모드용
+		private var _pieceImageDicIMode:Dictionary;								 			//조각난 이미지들을 담는 딕셔너리	- 이미지모드용
 		private var _sheetImageDicIMode:Dictionary = new Dictionary();
 		
 		private var _numberOfPNG:int;
@@ -159,9 +158,7 @@ package
 			var touch:Touch = event.getTouch(_selectSpriteSheetButton, TouchPhase.ENDED);
 			if(touch)
 			{
-				_spriteSheetSprite.visible = true;
-				
-				
+				_spriteSheetList.visible = true;
 			}
 		}
 		
@@ -288,7 +285,7 @@ package
 		
 			}
 			
-			dispatchEvent(new Event("test"));
+			dispatchEvent(new Event("loaded"));
 			
 			
 		}
@@ -335,8 +332,7 @@ package
 			_scaledSpriteSheetDic[name] = scaledSpriteSheet;
 			
 			
-			addChild(scaledSpriteSheet);
-			
+			addChild(scaledSpriteSheet);			
 			
 			
 			setSpriteSheetTextField(name);
@@ -358,6 +354,7 @@ package
 		 */
 		private function setSpriteSheetTextField(name:String):void
 		{
+			var _spriteSheetTextField:TextField;
 			_spriteSheetTextField = new TextField(240,24, "");
 			
 			_spriteSheetTextField.text = name;
@@ -372,8 +369,8 @@ package
 				{					
 					_spriteSheetVector[i].x = 50;
 					_spriteSheetVector[i].y = 624 + (i * 24);
-					_spriteSheetSprite.visible = false;
-					_spriteSheetSprite.addChild(_spriteSheetVector[i]);
+					_spriteSheetList.visible = false;
+					_spriteSheetList.addChild(_spriteSheetVector[i]);
 					if(i == _spriteSheetVector.length - 1)
 					{
 						_currentTextField.text = _spriteSheetVector[i].name;
@@ -383,8 +380,8 @@ package
 					}
 				}
 				
-				_spriteSheetSprite.addEventListener(TouchEvent.TOUCH, onSelectSpriteSheetList);
-				addChild(_spriteSheetSprite);
+				_spriteSheetList.addEventListener(TouchEvent.TOUCH, onSelectSpriteSheetList);
+				addChild(_spriteSheetList);
 				
 				
 			}
@@ -406,7 +403,7 @@ package
 				{
 					trace(touch.target.name);
 					_currentTextField.text = touch.target.name;
-					_spriteSheetSprite.visible = false;
+					_spriteSheetList.visible = false;
 					
 					//딕셔너리를 순회하여 모든 작은이미지들의 visible을 끄고, 선택된 이미지의 visible만 true로 함
 					for(var key:String in _scaledSpriteSheetDic)

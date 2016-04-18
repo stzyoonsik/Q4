@@ -88,7 +88,7 @@ package
 				
 				_spriteSheet.init(_guiArray);
 				_spriteSheet.addEventListener("selected", onSelectSpriteSheet);
-				_spriteSheet.addEventListener("test", onSelectSpriteSheet);
+				_spriteSheet.addEventListener("loaded", onSelectSpriteSheet);
 				addChild(_spriteSheet);
 				
 				
@@ -244,7 +244,6 @@ package
 				
 				_animationMode.visible = false;
 				_imageMode.visible = true;
-				
 			}
 		}
 		
@@ -262,6 +261,9 @@ package
 				
 				_animationMode.visible = false;
 				_imageMode.visible = true;
+				
+				if(_animationMode.timer != null && _animationMode.timer.running)
+					onClickPauseButton();
 			}
 		}
 		
@@ -354,11 +356,20 @@ package
 					_imageMode.pieceImage.texture = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].image.texture;
 					_imageMode.pieceImage.width = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].rect.width;
 					_imageMode.pieceImage.height = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].rect.height;
+					_imageMode.currentImageTextField.text =  _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].name;
+					
+					if(_imageMode.pieceImage.width > 400 || _imageMode.pieceImage.height > 400)
+					{
+						_imageMode.pieceImage.width /= 2;
+						_imageMode.pieceImage.height /= 2;
+						_imageMode.currentImageTextField.text += " (2배 축소)";
+						trace("축소");
+					}
 					
 					FunctionMgr.makeVisibleFalse(_imageMode.spriteListVector);
 					
 					_imageMode.makeArrowVisibleFalse();
-					_imageMode.currentSpriteSheet.text =  _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].name;
+					//_imageMode.currentImageTextField.text =  _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].name;
 				}
 			}
 		}
@@ -367,7 +378,6 @@ package
 		private function onClickPlayButton():void
 		{
 			trace("재생");
-			//var tempVec:Vector.<Image> = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text];
 			_animationMode.timer = new Timer(_animationMode.delay, _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].length - _animationMode.currentIndex);
 			
 			_animationMode.timer.addEventListener(TimerEvent.TIMER, onTimerStart);
@@ -410,8 +420,17 @@ package
 			_animationMode.pieceImage.texture = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].texture;
 			_animationMode.pieceImage.width = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].width;
 			_animationMode.pieceImage.height = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].height;
-			
 			_animationMode.nameTextField.text = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].name; 
+			
+			if(_animationMode.pieceImage.width > 400 || _animationMode.pieceImage.height > 400)
+			{
+				_animationMode.pieceImage.width /= 2;
+				_animationMode.pieceImage.height /= 2;
+				_animationMode.nameTextField.text += " (2배 축소)";
+				trace("축소");
+			}
+			
+			
 			_animationMode.indexTextField.text = _animationMode.currentIndex.toString() + " / " + (_spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].length - 1); 
 			_animationMode.currentIndex++;
 		}

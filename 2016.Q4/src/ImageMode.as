@@ -19,7 +19,7 @@ package
 		private var _spriteListVector:Vector.<Sprite>;										//스프라이트시트 텍스트필드를 담는 배열									
 		private var _listSpr:Sprite = new Sprite();											//우측 하단 상하화살표버튼을 누르면 열리는 리스트
 		private var _selectSpriteSheetButton:Image;											//상하화살표버튼
-		private var _currentSpriteSheet:TextField = new TextField(200, 24, "");				//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
+		private var _currentImageTextField:TextField = new TextField(200, 24, "");				//현재 선택된 이미지의 이름을 나타내기 위한 텍스트필드
 		
 		
 		public function ImageMode()
@@ -28,14 +28,14 @@ package
 			
 		}
 		
-		public function get currentSpriteSheet():TextField
+		public function get currentImageTextField():TextField
 		{
-			return _currentSpriteSheet;
+			return _currentImageTextField;
 		}
 		
-		public function set currentSpriteSheet(value:TextField):void
+		public function set currentImageTextField(value:TextField):void
 		{
-			_currentSpriteSheet = value;
+			_currentImageTextField = value;
 		}
 		
 		public function get currentPage():int
@@ -110,8 +110,8 @@ package
 						break;
 				}
 			}
-			_currentSpriteSheet.x = 600;
-			_currentSpriteSheet.y = 500;
+			_currentImageTextField.x = 600;
+			_currentImageTextField.y = 500;
 			
 			
 			_pieceImage.texture = null;
@@ -124,7 +124,7 @@ package
 			addChild(_pieceImage);
 			
 			
-			addChild(_currentSpriteSheet);
+			addChild(_currentImageTextField);
 			
 			
 			addChild(_listSpr);
