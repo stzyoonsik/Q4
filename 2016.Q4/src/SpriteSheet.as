@@ -273,7 +273,7 @@ package
 					var pieceImage:Image = new Image(pieceTexture);
 					
 					var pt:Point = new Point(0,0);
-					var pieceBitmapData:BitmapData = new BitmapData(imageData.rect.width, imageData.rect.height, false);
+					var pieceBitmapData:BitmapData = new BitmapData(imageData.rect.width, imageData.rect.height);
 					pieceBitmapData.copyPixels(_spriteSheetDic[key].bitmapData, imageData.rect, pt);
 					
 					
@@ -307,15 +307,15 @@ package
 			_selectSpriteSheetButton.visible = true;
 			
 			var loaderInfo:LoaderInfo = LoaderInfo(event.target);
-			var bitmapData:BitmapData = new BitmapData(loaderInfo.width, loaderInfo.height);			
-			bitmapData.draw(loaderInfo.loader);
 			
-			var texture:Texture = Texture.fromBitmapData(bitmapData);			
+			var bitmap:Bitmap = new Bitmap();
+			bitmap = loaderInfo.content as Bitmap;
+			var texture:Texture = Texture.fromBitmap(bitmap);			
 			var image:Image = new Image(texture);
 			
 			var imageData:ImageData = new ImageData();
 			imageData.image = image;
-			imageData.bitmapData = bitmapData;
+			imageData.bitmapData = bitmap.bitmapData;
 			//이름 따오기
 			var name:String = loaderInfo.url;
 			var slash:int = name.lastIndexOf("/");

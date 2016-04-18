@@ -19,16 +19,16 @@ package
 		
 		private var _pieceImage:Image = new Image(null);									//화면에 보여주기 용 스프라이트
 		
-		//private var _playSpeed:Number;														//재생속도
 		private var _currentIndex:int;														//현재 보여줄 이미지의 인덱스
 		
 		private var _imageVector:Vector.<Image> = new Vector.<Image>;
 		
-		private var _delay:uint = 1000;
+		private var _delay:uint = 100;
 		private var _timer:Timer;// = new Timer(delay);
 		
 		private var _nameTextField:TextField = new TextField(200,24,"");						//현재 재생중인 애니메이션의 이미지의 이름을 알려주는 텍스트필드
 		private var _indexTextField:TextField = new TextField(200, 24, "");
+		
 		
 		public function AnimationMode()
 		{

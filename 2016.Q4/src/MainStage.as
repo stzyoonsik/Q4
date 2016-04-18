@@ -47,7 +47,8 @@ package
 		public function MainStage()
 		{
 			_loadResource = new GUILoader(onLoadingComplete);
-			addEventListener(TouchEvent.TOUCH, onAddedEvents);				
+			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
+			
 		}
 		
 		
@@ -437,7 +438,7 @@ package
 			}
 			
 			
-			_animationMode.indexTextField.text = _animationMode.currentIndex.toString() + " / " + (_spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].length - 1); 
+			_animationMode.indexTextField.text = (_animationMode.currentIndex + 1).toString() + " / " + (_spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].length ); 
 			_animationMode.currentIndex++;
 		}
 		
