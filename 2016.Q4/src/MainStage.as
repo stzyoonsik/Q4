@@ -1,6 +1,7 @@
 package
 {	
 	
+	import flash.events.TimerEvent;
 	import flash.filesystem.FileStream;
 	import flash.utils.Dictionary;
 	
@@ -12,6 +13,7 @@ package
 	import starling.events.TouchPhase;
 	import starling.text.TextField;
 	import starling.textures.Texture;
+	import flash.utils.Timer;
 	
 	public class MainStage extends Sprite
 	{
@@ -85,14 +87,15 @@ package
 				init();
 				
 				_spriteSheet.init(_guiArray);
-				_spriteSheet.addEventListener("selected", onSelectedSpriteSheet);
+				_spriteSheet.addEventListener("selected", onSelectSpriteSheet);
 				addChild(_spriteSheet);
 				
 				
 				_animationMode.init(_guiArray);	
-				_animationMode.addEventListener("Play", onPlay);
-				_animationMode.addEventListener("Pause", onPause);
-				_animationMode.addEventListener("Delete", onDelete);
+				_animationMode.addEventListener("Play", onClickPlayButton);
+				_animationMode.addEventListener("Pause", onClickPauseButton);
+				_animationMode.addEventListener("Delete", onClickDeleteButton);
+				
 				addChild(_animationMode);
 				
 				_imageMode.init(_guiArray);
@@ -269,11 +272,11 @@ package
 		 * 이미지모드 - 왼쪽에서 스프라이트시트를 선택하면 오른쪽에 안에 들어있는 이미지들을 순차적으로 담는 메소드 
 		 * 
 		 */		
-		private function onSelectedSpriteSheet():void
+		private function onSelectSpriteSheet():void
 		{
 			trace("스프라이트 시트 선택함");
 			_imageMode.currentPage = 0;
-			var dic:Dictionary = _spriteSheet.imageDic;
+			var dic:Dictionary = _spriteSheet.sheetImageDicIMode;
 			var pieceDic:Dictionary = dic[_spriteSheet.currentTextField.text];
 			
 			
@@ -332,6 +335,8 @@ package
 			
 		}
 		
+	
+		
 		/**
 		 * 
 		 * @param event 텍스트 필드 클릭
@@ -347,34 +352,62 @@ package
 				{
 					
 					trace(touch.target.name);
-					_imageMode.pieceImage.texture = _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].image.texture;
-					_imageMode.pieceImage.width = _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].rect.width;
-					_imageMode.pieceImage.height = _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].rect.height;
-					_imageMode.pieceImage.alignPivot("center", "center");
-					_imageMode.pieceImage.x = 600;
-					_imageMode.pieceImage.y = 250;
+					_imageMode.pieceImage.texture = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].image.texture;
+					_imageMode.pieceImage.width = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].rect.width;
+					_imageMode.pieceImage.height = _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].rect.height;
 					
 					FunctionMgr.makeVisibleFalse(_imageMode.spriteListVector);
 					
 					_imageMode.makeArrowVisibleFalse();
-					_imageMode.currentSpriteSheet.text =  _spriteSheet.imageDic[_spriteSheet.currentTextField.text][touch.target.name].name;
+					_imageMode.currentSpriteSheet.text =  _spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][touch.target.name].name;
 				}
 			}
 		}
 		
 		
-		private function onPlay():void
+		private function onClickPlayButton():void
+		{
+			trace("재생");
+			var tempVec:Vector.<Image> = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text];
+			_animationMode.timer = new Timer(1000, tempVec.length - _animationMode.currentIndex);
+			
+			_animationMode.timer.addEventListener(TimerEvent.TIMER, onTimerStart);
+			_animationMode.timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop)
+				
+			_animationMode.timer.start();			
+			
+		}
+		
+		private function onClickPauseButton():void
+		{
+			_animationMode.timer.stop();
+			_animationMode.timer.removeEventListener(TimerEvent.TIMER, onTimerStart);
+			_animationMode.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop);
+		}
+		
+		private function onClickDeleteButton():void
 		{
 			
 		}
 		
-		private function onPause():void
+		private function onTimerStart(event:TimerEvent):void
 		{
 			
+			trace("타이머 시작");
+			
+			_animationMode.pieceImage.texture = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].texture;
+			_animationMode.pieceImage.width = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].width;
+			_animationMode.pieceImage.height = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].height;
+			
+			_animationMode.currentIndex++;
 		}
 		
-		private function onDelete():void
+		private function onTimerStop(event:TimerEvent):void
 		{
+			trace("타이머 종료");
+			
+			_animationMode.timer.removeEventListener(TimerEvent.TIMER, onTimerStart);
+			_animationMode.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop);
 			
 		}
 	}

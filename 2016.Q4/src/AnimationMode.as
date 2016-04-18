@@ -1,5 +1,8 @@
 package
 {
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
@@ -11,15 +14,65 @@ package
 	{
 		private var _playButton:Image;
 		private var _pauseButton:Image;
-		private var _deleteButton:Image;			
+		private var _deleteButton:Image;	
 		
+		private var _pieceImage:Image = new Image(null);									//화면에 보여주기 용 스프라이트
 		
+		//private var _playSpeed:Number;														//재생속도
+		private var _currentIndex:int;														//현재 보여줄 이미지의 인덱스
+		
+		private var _imageVector:Vector.<Image> = new Vector.<Image>;
+		
+		public var delay:uint = 1000;
+		public var timer:Timer;// = new Timer(delay);
 		
 		public function AnimationMode()
 		{
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
 		}
 		
+		public function get imageVector():Vector.<Image>
+		{
+			return _imageVector;
+		}
+
+		public function set imageVector(value:Vector.<Image>):void
+		{
+			_imageVector = value;
+		}
+
+		public function get currentIndex():int
+		{
+			return _currentIndex;
+		}
+
+		public function set currentIndex(value:int):void
+		{
+			_currentIndex = value;
+		}
+
+//		public function get playSpeed():Number
+//		{
+//			return _playSpeed;
+//		}
+//
+//		public function set playSpeed(value:Number):void
+//		{
+//			_playSpeed = value;
+//		}
+
+		public function get pieceImage():Image
+		{
+			return _pieceImage;
+		}
+
+		public function set pieceImage(value:Image):void
+		{
+			_pieceImage = value;
+		}
+		
+		
+
 		public function init(guiArray:Vector.<Image>):void
 		{
 			trace("init");
@@ -54,6 +107,15 @@ package
 					
 				}
 			}
+			
+			_pieceImage.texture = null;
+			_pieceImage.width = 0;
+			_pieceImage.height = 0;
+			_pieceImage.alignPivot("center", "center");
+			_pieceImage.x = 600;
+			_pieceImage.y = 250;
+			
+			addChild(_pieceImage);
 		}
 		
 		private function onAddedEvents(event:starling.events.Event):void

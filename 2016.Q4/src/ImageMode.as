@@ -14,11 +14,11 @@ package
 		private var _arrowUp:Image;
 		private var _arrowDown:Image;
 		private var _currentPage:int;
-		private var _pieceSpr:Sprite = new Sprite();
+		//private var _pieceSpr:Sprite = new Sprite();
 		private var _pieceImage:Image = new Image(null);									//화면에 보여주기 용 스프라이트
 		private var _spriteListVector:Vector.<Sprite>;										//스프라이트시트 텍스트필드를 담는 배열									
-		private var _listSpr:Sprite = new Sprite();
-		private var _selectSpriteSheetButton:Image;											//화살표버튼
+		private var _listSpr:Sprite = new Sprite();											//우측 하단 상하화살표버튼을 누르면 열리는 리스트
+		private var _selectSpriteSheetButton:Image;											//상하화살표버튼
 		private var _currentSpriteSheet:TextField = new TextField(200, 24, "");				//현재 선택된 스프라이트 시트를 나타내기 위한 텍스트필드
 		
 		
@@ -117,6 +117,9 @@ package
 			_pieceImage.texture = null;
 			_pieceImage.width = 0;
 			_pieceImage.height = 0;
+			_pieceImage.alignPivot("center", "center");
+			_pieceImage.x = 600;
+			_pieceImage.y = 250;
 			
 			addChild(_pieceImage);
 			

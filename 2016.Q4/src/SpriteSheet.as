@@ -23,9 +23,9 @@ package
 	{
 		private var _loadSpriteSheetsButton:Image;											//애니메이션모드, 이미지모드에서 공유됨. 스프라이트시트를 로드하는 버튼
 				
-		private var _spr:Sprite = new Sprite();												//스프라이트시트 텍스트필드 를 담는 Sprite
+		private var _spriteSheetSprite:Sprite = new Sprite();								//스프라이트시트 텍스트필드 를 담는 Sprite
 		private var _spriteSheetTextField:TextField;										//현재 선택된 스프라이트시트의 이름을 나타내는 텍스트필드
-		private var _spriteSheetList:Vector.<TextField> = new Vector.<TextField>;			//스프라이트시트 텍스트필드를 담는 배열
+		private var _spriteSheetVector:Vector.<TextField> = new Vector.<TextField>;			//스프라이트시트 텍스트필드를 담는 배열
 		private var _selectSpriteSheetButton:Image;											//화살표버튼
 		
 		
@@ -82,22 +82,22 @@ package
 			_currentTextField = value;
 		}
 
-		public function get pieceImageDic():Dictionary
+		public function get pieceImageDicIMode():Dictionary
 		{
 			return _pieceImageDicIMode;
 		}
 
-		public function set pieceImageDic(value:Dictionary):void
+		public function set pieceImageDicIMode(value:Dictionary):void
 		{
 			_pieceImageDicIMode = value;
 		}
 
-		public function get imageDic():Dictionary
+		public function get sheetImageDicIMode():Dictionary
 		{
 			return _sheetImageDicIMode;
 		}
 
-		public function set imageDic(value:Dictionary):void
+		public function set sheetImageDicIMode(value:Dictionary):void
 		{
 			_sheetImageDicIMode = value;
 		}
@@ -158,7 +158,7 @@ package
 			var touch:Touch = event.getTouch(_selectSpriteSheetButton, TouchPhase.ENDED);
 			if(touch)
 			{
-				_spr.visible = true;
+				_spriteSheetSprite.visible = true;
 				
 				
 			}
@@ -230,7 +230,7 @@ package
 		 */
 		private function completeAll():void
 		{
-			if(_numberOfPNG == _spriteSheetList.length && _numberOfXML == FunctionMgr.getDictionaryLength(_xmlDic))
+			if(_numberOfPNG == _spriteSheetVector.length && _numberOfXML == FunctionMgr.getDictionaryLength(_xmlDic))
 			{
 				readXML();
 			}
@@ -360,27 +360,27 @@ package
 			_spriteSheetTextField.name = name;
 			_spriteSheetTextField.border = true;
 			
-			_spriteSheetList.push(_spriteSheetTextField);
+			_spriteSheetVector.push(_spriteSheetTextField);
 			
-			if(_numberOfPNG == _spriteSheetList.length)
+			if(_numberOfPNG == _spriteSheetVector.length)
 			{
-				for(var i:int = 0; i < _spriteSheetList.length; ++i)
+				for(var i:int = 0; i < _spriteSheetVector.length; ++i)
 				{					
-					_spriteSheetList[i].x = 50;
-					_spriteSheetList[i].y = 624 + (i * 24);
-					_spr.visible = false;
-					_spr.addChild(_spriteSheetList[i]);
-					if(i == _spriteSheetList.length - 1)
+					_spriteSheetVector[i].x = 50;
+					_spriteSheetVector[i].y = 624 + (i * 24);
+					_spriteSheetSprite.visible = false;
+					_spriteSheetSprite.addChild(_spriteSheetVector[i]);
+					if(i == _spriteSheetVector.length - 1)
 					{
-						_currentTextField.text = _spriteSheetList[i].name;
-						_currentTextField.name = _spriteSheetList[i].name;
+						_currentTextField.text = _spriteSheetVector[i].name;
+						_currentTextField.name = _spriteSheetVector[i].name;
 					
 						_scaledSpriteSheetDic[_currentTextField.text].visible = true;
 					}
 				}
 				
-				_spr.addEventListener(TouchEvent.TOUCH, onSelectSpriteSheetList);
-				addChild(_spr);
+				_spriteSheetSprite.addEventListener(TouchEvent.TOUCH, onSelectSpriteSheetList);
+				addChild(_spriteSheetSprite);
 				
 				
 			}
@@ -395,14 +395,14 @@ package
 		 */
 		private function onSelectSpriteSheetList(event:TouchEvent):void
 		{
-			for(var i:int = 0; i<_spriteSheetList.length; ++i)
+			for(var i:int = 0; i<_spriteSheetVector.length; ++i)
 			{
-				var touch:Touch = event.getTouch(_spriteSheetList[i], TouchPhase.ENDED);
+				var touch:Touch = event.getTouch(_spriteSheetVector[i], TouchPhase.ENDED);
 				if(touch)
 				{
 					trace(touch.target.name);
 					_currentTextField.text = touch.target.name;
-					_spr.visible = false;
+					_spriteSheetSprite.visible = false;
 					
 					//딕셔너리를 순회하여 모든 작은이미지들의 visible을 끄고, 선택된 이미지의 visible만 true로 함
 					for(var key:String in _scaledSpriteSheetDic)
