@@ -308,7 +308,7 @@ package
 			
 			var loaderInfo:LoaderInfo = LoaderInfo(event.target);
 			
-			var bitmap:Bitmap = new Bitmap();
+			var bitmap:Bitmap;
 			bitmap = loaderInfo.content as Bitmap;
 			var texture:Texture = Texture.fromBitmap(bitmap);			
 			var image:Image = new Image(texture);

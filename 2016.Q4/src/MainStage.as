@@ -340,6 +340,7 @@ package
 				}
 			}
 			
+			_imageMode.spriteListVector.sort(FunctionMgr.compareName);
 			
 		}
 		

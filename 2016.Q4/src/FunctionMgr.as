@@ -33,7 +33,7 @@ package
 			
 			for(var key:Object in dic)
 			{
-				length++;
+				length++;				
 			}
 			
 			return length;
@@ -45,6 +45,23 @@ package
 			{
 				vector[i].visible = false;
 			}
+		}
+		
+		public static function compareName(a, b):int
+		{
+			
+			if (b.name > a.name) 
+			{ 
+				return -1; 
+			} 
+			else if (b.name < a.name) 
+			{ 
+				return 1; 
+			} 
+			else 
+			{ 
+				return 0; 
+			} 
 		}
 	}
 }
