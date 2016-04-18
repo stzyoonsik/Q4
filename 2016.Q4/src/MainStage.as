@@ -88,6 +88,7 @@ package
 				
 				_spriteSheet.init(_guiArray);
 				_spriteSheet.addEventListener("selected", onSelectSpriteSheet);
+				_spriteSheet.addEventListener("test", onSelectSpriteSheet);
 				addChild(_spriteSheet);
 				
 				
@@ -101,9 +102,6 @@ package
 				_imageMode.init(_guiArray);
 				_imageMode.visible = false;
 				addChild(_imageMode);
-				
-				
-				
 				
 			}
 		}
@@ -276,6 +274,7 @@ package
 		{
 			trace("스프라이트 시트 선택함");
 			_imageMode.currentPage = 0;
+			_animationMode.currentIndex = 0;
 			var dic:Dictionary = _spriteSheet.sheetImageDicIMode;
 			var pieceDic:Dictionary = dic[_spriteSheet.currentTextField.text];
 			
@@ -364,20 +363,20 @@ package
 			}
 		}
 		
-		
+		//플레이버튼 클릭 (dispatch된 콜백메소드)
 		private function onClickPlayButton():void
 		{
 			trace("재생");
-			var tempVec:Vector.<Image> = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text];
-			_animationMode.timer = new Timer(1000, tempVec.length - _animationMode.currentIndex);
+			//var tempVec:Vector.<Image> = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text];
+			_animationMode.timer = new Timer(_animationMode.delay, _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].length - _animationMode.currentIndex);
 			
 			_animationMode.timer.addEventListener(TimerEvent.TIMER, onTimerStart);
 			_animationMode.timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop)
 				
-			_animationMode.timer.start();			
-			
+			_animationMode.timer.start();		
 		}
 		
+		//일시정지버튼 클릭 (dispatch된 콜백메소드)
 		private function onClickPauseButton():void
 		{
 			_animationMode.timer.stop();
@@ -385,11 +384,24 @@ package
 			_animationMode.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop);
 		}
 		
+		//삭제버튼 클릭 (dispatch된 콜백메소드) - 타이머가 일시정지(정지)된 상태에서만 삭제 가능
 		private function onClickDeleteButton():void
 		{
-			
+			//일시정지중이면
+			if(!_animationMode.timer.running)
+			{
+				_spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].splice(_animationMode.currentIndex - 1, 1);
+				_animationMode.nameTextField.text = "삭제됨";
+				_animationMode.currentIndex--;
+			}
 		}
 		
+		
+		/**
+		 * 
+		 * @param event timer가 시작됨
+		 * 정해진 시간마다 1번씩 들어오는 콜백메소드. 애니메이션을 띄워준다
+		 */
 		private function onTimerStart(event:TimerEvent):void
 		{
 			
@@ -399,12 +411,20 @@ package
 			_animationMode.pieceImage.width = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].width;
 			_animationMode.pieceImage.height = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].height;
 			
+			_animationMode.nameTextField.text = _spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text][_animationMode.currentIndex].name; 
+			_animationMode.indexTextField.text = _animationMode.currentIndex.toString() + " / " + (_spriteSheet.sheetImageDicAMode[_spriteSheet.currentTextField.text].length - 1); 
 			_animationMode.currentIndex++;
 		}
 		
+		/**
+		 * 
+		 * @param event 타이머 종료
+		 * 
+		 */
 		private function onTimerStop(event:TimerEvent):void
 		{
 			trace("타이머 종료");
+			_animationMode.currentIndex = 0;
 			
 			_animationMode.timer.removeEventListener(TimerEvent.TIMER, onTimerStart);
 			_animationMode.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerStop);

@@ -9,6 +9,7 @@ package
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.text.TextField;
 
 	public class AnimationMode extends Sprite
 	{
@@ -23,14 +24,57 @@ package
 		
 		private var _imageVector:Vector.<Image> = new Vector.<Image>;
 		
-		public var delay:uint = 1000;
-		public var timer:Timer;// = new Timer(delay);
+		private var _delay:uint = 1000;
+		private var _timer:Timer;// = new Timer(delay);
+		
+		private var _nameTextField:TextField = new TextField(200,24,"");						//현재 재생중인 애니메이션의 이미지의 이름을 알려주는 텍스트필드
+		private var _indexTextField:TextField = new TextField(200, 24, "");
 		
 		public function AnimationMode()
 		{
 			addEventListener(TouchEvent.TOUCH, onAddedEvents);	
 		}
 		
+		public function get indexTextField():TextField
+		{
+			return _indexTextField;
+		}
+
+		public function set indexTextField(value:TextField):void
+		{
+			_indexTextField = value;
+		}
+
+		public function get timer():Timer
+		{
+			return _timer;
+		}
+
+		public function set timer(value:Timer):void
+		{
+			_timer = value;
+		}
+
+		public function get delay():uint
+		{
+			return _delay;
+		}
+
+		public function set delay(value:uint):void
+		{
+			_delay = value;
+		}
+
+		public function get nameTextField():TextField
+		{
+			return _nameTextField;
+		}
+
+		public function set nameTextField(value:TextField):void
+		{
+			_nameTextField = value;
+		}
+
 		public function get imageVector():Vector.<Image>
 		{
 			return _imageVector;
@@ -51,15 +95,6 @@ package
 			_currentIndex = value;
 		}
 
-//		public function get playSpeed():Number
-//		{
-//			return _playSpeed;
-//		}
-//
-//		public function set playSpeed(value:Number):void
-//		{
-//			_playSpeed = value;
-//		}
 
 		public function get pieceImage():Image
 		{
@@ -113,15 +148,20 @@ package
 			_pieceImage.height = 0;
 			_pieceImage.alignPivot("center", "center");
 			_pieceImage.x = 600;
-			_pieceImage.y = 250;
-			
+			_pieceImage.y = 250;			
 			addChild(_pieceImage);
+			
+			_nameTextField.x = 500;
+			_nameTextField.y = 400;
+			addChild(_nameTextField);
+			
+			_indexTextField.x = 500;
+			_indexTextField.y = 75;
+			addChild(_indexTextField);
 		}
 		
 		private function onAddedEvents(event:starling.events.Event):void
 		{
-			//trace(event.target);		
-			
 			_playButton.addEventListener(TouchEvent.TOUCH, onPlayButton);
 			_pauseButton.addEventListener(TouchEvent.TOUCH, onPauseButton);
 			_deleteButton.addEventListener(TouchEvent.TOUCH, onDeleteButton);

@@ -33,10 +33,10 @@ package
 		private var _scaledSpriteSheetDic:Dictionary = new Dictionary();					//위와 같지만 이미지 크기를 1/4로 줄인 이미지가 담긴 딕셔너리
 		private var _xmlDic:Dictionary = new Dictionary();
 		
-		private var _pieceImageVectorAMode:Vector.<Image> = new Vector.<Image>;					//조각난 이미지들을 담는 배열		- 애니메이션모드용
+		private var _pieceImageVectorAMode:Vector.<Image>;// = new Vector.<Image>;					//조각난 이미지들을 담는 배열		- 애니메이션모드용
 		private var _sheetImageDicAMode:Dictionary = new Dictionary();
 		
-		private var _pieceImageDicIMode:Dictionary = new Dictionary();				 			//조각난 이미지들을 담는 딕셔너리	- 이미지모드용
+		private var _pieceImageDicIMode:Dictionary;// = new Dictionary();				 			//조각난 이미지들을 담는 딕셔너리	- 이미지모드용
 		private var _sheetImageDicIMode:Dictionary = new Dictionary();
 		
 		private var _numberOfPNG:int;
@@ -136,6 +136,7 @@ package
 			}
 			_currentTextField.x = 50;
 			_currentTextField.y = 600;
+			_currentTextField.border = true;
 			
 			addChild(_currentTextField);
 		
@@ -262,7 +263,7 @@ package
 			for(var key:String in _xmlDic)
 			{
 				_pieceImageDicIMode = new Dictionary();
-				
+				_pieceImageVectorAMode = new Vector.<Image>;
 				for(var i:int = 0; i < _xmlDic[key].child("SubTexture").length(); ++i)
 				{
 					var imageData:ImageData = new ImageData();
@@ -275,6 +276,7 @@ package
 					var pieceTexture:Texture = Texture.fromTexture(_spriteSheetDic[key].texture, imageData.rect);
 					var pieceImage:Image = new Image(pieceTexture);
 					
+					pieceImage.name = imageData.name;
 					imageData.image = pieceImage;
 					_pieceImageVectorAMode.push(pieceImage);
 					
@@ -285,6 +287,8 @@ package
 				_sheetImageDicAMode[key] = _pieceImageVectorAMode;
 		
 			}
+			
+			dispatchEvent(new Event("test"));
 			
 			
 		}
