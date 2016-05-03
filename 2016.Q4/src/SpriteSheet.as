@@ -188,6 +188,8 @@ package
 				var file:File = File.applicationDirectory;
 				file.browseForOpenMultiple("Select SpriteSheet PNG Files");
 				file.addEventListener(FileListEvent.SELECT_MULTIPLE, onFilesSelected);
+				
+				
 			}
 		}
 		
@@ -206,7 +208,8 @@ package
 				//trace(event.files[i].nativePath);
 				//PNG 로드
 				var loader:Loader = new Loader();				
-				loader.load(new URLRequest(event.files[i].url));				
+				loader.load(new URLRequest(event.files[i].url));
+				trace(event.files[i].url);
 				loader.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE, onLoaderComplete);				
 				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderFailed);
 				

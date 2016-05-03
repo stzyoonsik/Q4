@@ -44,6 +44,8 @@ package
 		
 		public function GUILoader(cFunc:Function)
 		{
+			if(!cFunc)
+				return;
 			_completeFunc = cFunc;
 			
 			var array:Array = new Array();

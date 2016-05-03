@@ -47,21 +47,21 @@ package
 			}
 		}
 		
-		public static function compareName(a, b):int
-		{
-			
-			if (b.name > a.name) 
-			{ 
-				return -1; 
-			} 
-			else if (b.name < a.name) 
-			{ 
-				return 1; 
-			} 
-			else 
-			{ 
-				return 0; 
-			} 
-		}
+//		public static function compareName(a, b):int
+//		{
+//			
+//			if (b.name > a.name) 
+//			{ 
+//				return -1; 
+//			} 
+//			else if (b.name < a.name) 
+//			{ 
+//				return 1; 
+//			} 
+//			else 
+//			{ 
+//				return 0; 
+//			} 
+//		}
 	}
 }

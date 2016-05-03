@@ -340,7 +340,7 @@ package
 				}
 			}
 			
-			_imageMode.spriteListVector.sort(FunctionMgr.compareName);
+			//_imageMode.spriteListVector.sort(FunctionMgr.compareName);
 			
 		}
 		
@@ -464,7 +464,7 @@ package
 		 */
 		private function onClickSaveButton():void
 		{
-			var _pngFile:File = File.documentsDirectory.resolvePath(_spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][_imageMode.currentImageTextField.text].name + ".png");
+			var _pngFile:File = File.documentsDirectory.resolvePath(_imageMode.currentImageTextField.text + ".png");
 			var byteArray:ByteArray = PNGEncoder.encode(_spriteSheet.sheetImageDicIMode[_spriteSheet.currentTextField.text][_imageMode.currentImageTextField.text].bitmapData);
 			
 			var _fileStream:FileStream = new FileStream();
